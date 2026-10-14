@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Vorläufiges App-Icon (Platzhalter) -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffc8e1"/>
+      <stop offset="1" stop-color="#c9b8ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <path d="M256 404c-10 0-20-4-27-11C150 322 98 276 98 210c0-50 38-88 86-88 30 0 55 15 72 40 17-25 42-40 72-40 48 0 86 38 86 88 0 66-52 112-131 183-7 7-17 11-27 11z" fill="#fff" opacity=".95"/>
+  <path d="M256 370c-6 0-12-2-16-7-68-61-112-100-112-153 0-33 24-58 56-58 24 0 43 15 56 40 4 8 11 12 16 12s12-4 16-12c13-25 32-40 56-40 32 0 56 25 56 58 0 53-44 92-112 153-4 5-10 7-16 7z" fill="#ff7eb6"/>
+  <circle cx="200" cy="200" r="18" fill="#fff" opacity=".8"/>
+</svg>
