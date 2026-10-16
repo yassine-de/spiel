@@ -85,6 +85,37 @@ export const TextureKeys = {
   PartitionHigh: 'home-partition-high',
   PartitionLow: 'home-partition-low',
   RoomBoard: 'home-room-board',
+  // Friseursalon
+  WallSalon: 'int-wall-salon',
+  BoardSalon: 'int-board-salon',
+  SalonChair: 'salon-chair',
+  SalonMirror: 'salon-mirror',
+  SalonTrolley: 'salon-trolley',
+  HairShelf: 'salon-hair-shelf',
+  MagazineTable: 'salon-magazine-table',
+  // Café
+  WallCafe: 'int-wall-cafe',
+  BoardCafe: 'int-board-cafe',
+  CafeCounter: 'cafe-counter',
+  CafeTableRound: 'cafe-table-round',
+  CafeChair: 'cafe-chair',
+  CakeStation: 'cafe-cake-station',
+  MenuBoard: 'cafe-menu-board',
+  CupShelf: 'cafe-cup-shelf',
+  // Schule
+  WallSchool: 'int-wall-school',
+  Blackboard: 'school-blackboard',
+  AlphabetPoster: 'school-alphabet',
+  PictureFrame: 'school-picture-frame',
+  SchoolDesk: 'school-desk',
+  SchoolChair: 'school-chair',
+  TeacherDesk: 'school-teacher-desk',
+  Easel: 'school-easel',
+  XylophoneTable: 'school-xylophone',
+  // Figuren (Erwachsene in den Läden; aus Avatar-Ebenen gezeichnet)
+  NpcHairdresser: 'char-npc-hairdresser',
+  NpcBarista: 'char-npc-barista',
+  NpcTeacher: 'char-npc-teacher',
 } as const;
 
 export type TextureKey = (typeof TextureKeys)[keyof typeof TextureKeys];

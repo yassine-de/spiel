@@ -1,6 +1,6 @@
 import type { Settings } from '../../storage/settingsStore';
 
-export type SoundName = 'click' | 'interact' | 'sparkle' | 'open' | 'close' | 'coin' | 'purchase' | 'oops' | 'add';
+export type SoundName = 'click' | 'interact' | 'sparkle' | 'open' | 'close' | 'coin' | 'purchase' | 'oops' | 'add' | 'snip' | 'pour' | 'cheer' | 'correct';
 
 interface Note {
   freq: number;
@@ -90,6 +90,27 @@ export class AudioManager {
           { freq: 440, start: 0.12, duration: 0.2, type: 'triangle', gain: 0.3 },
         ]);
         break;
+      case 'snip':
+        // Schere: zwei kurze, helle Klicks
+        this.notes([
+          { freq: 2400, start: 0, duration: 0.035, type: 'square', gain: 0.06 },
+          { freq: 3100, start: 0.07, duration: 0.03, type: 'square', gain: 0.05 },
+        ]);
+        break;
+      case 'pour':
+        this.notes([0, 1, 2, 3, 4, 5].map((i) => ({ freq: 420 + i * 70, start: i * 0.06, duration: 0.09, type: 'sine' as OscillatorType, gain: 0.12 })));
+        break;
+      case 'correct':
+        this.notes([
+          { freq: 1047, start: 0, duration: 0.12, type: 'triangle', gain: 0.32 },
+          { freq: 1568, start: 0.1, duration: 0.22, type: 'triangle', gain: 0.3 },
+        ]);
+        break;
+      case 'cheer':
+        this.notes(
+          [523, 659, 784, 1047, 784, 1047].map((freq, i) => ({ freq, start: i * 0.1, duration: 0.22, type: 'triangle' as OscillatorType, gain: 0.28 })),
+        );
+        break;
       case 'sparkle':
         this.notes(
           [1319, 1568, 1976, 2637].map((freq, i) => ({
@@ -102,6 +123,15 @@ export class AudioManager {
         );
         break;
     }
+  }
+
+  /** Ein einzelner, warmer Ton (z. B. Xylophon). */
+  tone(freq: number, duration = 0.6): void {
+    if (this.muted || this.volume <= 0 || !this.context || this.context.state !== 'running') return;
+    this.notes([
+      { freq, start: 0, duration, type: 'sine', gain: 0.4 },
+      { freq: freq * 4, start: 0, duration: duration * 0.25, type: 'sine', gain: 0.08 },
+    ]);
   }
 
   private get effectiveVolume(): number {

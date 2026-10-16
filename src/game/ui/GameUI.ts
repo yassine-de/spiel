@@ -1,4 +1,6 @@
+import { clearDrawing } from '../../storage/drawingStore';
 import type { AvatarConfig } from '../avatar/avatarTypes';
+import { ActivityPanel } from './ActivityPanel';
 import { audio, saves, tasks } from '../services';
 import { AvatarEditor } from './AvatarEditor';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -30,6 +32,8 @@ export class GameUI {
   readonly shop: ShopPanel;
   readonly inventory: InventoryPanel;
   readonly tasks: TasksPanel;
+  /** Spiele und Aktionen in Salon, Café und Schule */
+  readonly activity: ActivityPanel;
 
   /**
    * Ändert den Avatar dauerhaft (Spielstand + Spielfigur).
@@ -90,6 +94,7 @@ export class GameUI {
     this.inventory = new InventoryPanel(modalLayer, (avatar) => this.applyAvatar(avatar));
     this.inventory.notify = (message) => this.toast.show(message);
     this.tasks = new TasksPanel(modalLayer);
+    this.activity = new ActivityPanel(modalLayer);
     // Erledigte Tagesaufgabe: Münzen gutschreiben und freundlich melden
     tasks.onCompleted((task) => {
       audio.play('coin');
@@ -112,7 +117,15 @@ export class GameUI {
 
   /** Ist gerade ein Fenster offen, das Spielmeldungen nicht stören sollen? */
   get busy(): boolean {
-    return this.shop.isOpen || this.editor.isOpen || this.inventory.isOpen || this.tasks.isOpen || this.pause.isOpen || this.settings.isOpen;
+    return (
+      this.shop.isOpen ||
+      this.editor.isOpen ||
+      this.inventory.isOpen ||
+      this.tasks.isOpen ||
+      this.pause.isOpen ||
+      this.settings.isOpen ||
+      this.activity.isOpen
+    );
   }
 
   private async confirmReset(): Promise<void> {
@@ -124,6 +137,7 @@ export class GameUI {
     });
     if (!ok) return;
     saves.reset();
+    clearDrawing();
     // Sauberer Neustart mit leerem Spielstand
     window.location.reload();
   }

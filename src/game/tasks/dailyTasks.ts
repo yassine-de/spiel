@@ -9,7 +9,16 @@ export type TaskEvent =
   | 'visit-boutique'
   | 'discover'
   | 'fountain'
-  | 'try-on';
+  | 'try-on'
+  | 'visit-salon'
+  | 'visit-cafe'
+  | 'visit-school'
+  | 'haircut'
+  | 'cake'
+  | 'cafe-treat'
+  | 'school-quiz'
+  | 'painting'
+  | 'music';
 
 export interface TaskDef {
   id: string;
@@ -32,6 +41,11 @@ export const TASK_POOL: TaskDef[] = [
   { id: 'home', title: 'Besuche dein Haus', reward: 15, event: 'visit-home' },
   { id: 'toystore', title: 'Schau im Spielzeugladen vorbei', reward: 15, event: 'visit-toystore' },
   { id: 'tryon', title: 'Probiere in der Boutique etwas an', reward: 20, event: 'try-on' },
+  { id: 'haircut', title: 'Lass dir im Friseursalon die Haare machen', reward: 25, event: 'haircut' },
+  { id: 'cake', title: 'Verziere im Café einen Kuchen', reward: 20, event: 'cake' },
+  { id: 'quiz', title: 'Löse an der Tafel ein Rätsel', reward: 25, event: 'school-quiz' },
+  { id: 'painting', title: 'Male in der Schule ein Bild', reward: 20, event: 'painting' },
+  { id: 'music', title: 'Spiel ein Lied auf dem Xylophon', reward: 15, event: 'music' },
 ];
 
 export const TASKS_PER_DAY = 3;

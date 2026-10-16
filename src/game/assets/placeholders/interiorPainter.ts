@@ -9,7 +9,7 @@ import { unitCanvas } from './cityPainter';
 /** Höhe der Rückwand in Welt-Einheiten (ein Wandstück ist 128 breit). */
 export const WALL_HEIGHT = 176;
 
-export type WallStyle = 'home' | 'boutique' | 'market' | 'toys' | 'bedroom' | 'kitchen';
+export type WallStyle = 'home' | 'boutique' | 'market' | 'toys' | 'bedroom' | 'kitchen' | 'salon' | 'cafe' | 'school';
 
 export function paintWall(style: WallStyle): HTMLCanvasElement {
   const { canvas, ctx } = unitCanvas(128, WALL_HEIGHT);
@@ -78,6 +78,61 @@ export function paintWall(style: WallStyle): HTMLCanvasElement {
       }
       ctx.fillStyle = '#8fdccf';
       ctx.fillRect(0, h * 0.4, 128, 5);
+      break;
+    case 'salon':
+      // Mintfarbene Tapete mit feinem Rautenmuster
+      ctx.fillStyle = '#e3f6f0';
+      ctx.fillRect(0, 0, 128, h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      ctx.lineWidth = 1.5;
+      for (let x = -128; x < 256; x += 32) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x + h, h);
+        ctx.moveTo(x + h, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+      }
+      ctx.fillStyle = '#ffc2dc';
+      for (let y = 16; y < h - 30; y += 32) {
+        for (let x = (y / 32) % 2 ? 16 : 0; x < 128; x += 32) {
+          ellipsePath(ctx, x, y, 2.2, 2.2);
+          ctx.fill();
+        }
+      }
+      break;
+    case 'cafe': {
+      // Oben warmer Putz, unten Holzvertäfelung
+      ctx.fillStyle = '#fbf0dd';
+      ctx.fillRect(0, 0, 128, h);
+      const rand = seededRandom(41);
+      ctx.fillStyle = 'rgba(160,110,70,0.18)';
+      for (let i = 0; i < 10; i++) {
+        ellipsePath(ctx, rand() * 128, 14 + rand() * (h * 0.4), 2.5, 1.6);
+        ctx.fill();
+      }
+      const top = h * 0.52;
+      const wood = ctx.createLinearGradient(0, top, 0, h);
+      wood.addColorStop(0, '#b9825a');
+      wood.addColorStop(1, '#94603f');
+      ctx.fillStyle = wood;
+      ctx.fillRect(0, top, 128, h - top);
+      ctx.fillStyle = 'rgba(60,30,15,0.18)';
+      for (let x = 0; x < 128; x += 16) ctx.fillRect(x, top, 1.5, h - top);
+      ctx.fillStyle = '#d9a77c';
+      ctx.fillRect(0, top - 4, 128, 6);
+      break;
+    }
+    case 'school':
+      // Hellgelbe Wand, grüner Sockel mit Leiste
+      ctx.fillStyle = '#fff6d8';
+      ctx.fillRect(0, 0, 128, h);
+      ctx.fillStyle = '#cfe8c6';
+      ctx.fillRect(0, h * 0.58, 128, h * 0.42);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, h * 0.58 - 4, 128, 5);
+      ctx.fillStyle = 'rgba(80,120,70,0.12)';
+      for (let x = 0; x < 128; x += 32) ctx.fillRect(x, h * 0.58, 1.5, h * 0.42);
       break;
     case 'toys': {
       ctx.fillStyle = '#e4f3ff';

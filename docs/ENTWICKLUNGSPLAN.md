@@ -21,7 +21,7 @@
 3. **Stadt** ✅ – große Stadtkarte, Gebäude, Eingänge, Szenenwechsel mit Rückkehrposition
 4. **Geschäfte** ✅ – Boutique, Supermarkt, Spielzeugladen, Produktkatalog, Einkauf, Münzen (+ Inventar-Grundfunktionen, Tagesaufgaben)
 5. **Inventar & Haus** ✅ – Inventar, Kleidung wechseln, Haus mit Räumen, Gegenstände platzieren
-6. NPCs – Figuren, Bewegungsmuster, Dialoge
+6. NPCs – Figuren, Bewegungsmuster, Dialoge (teilweise ✅: Lina, Ben und Frau Sonnenschein in Salon, Café und Schule; Figuren in der Stadt fehlen noch)
 7. Samya-Specials – MessageManager, Überraschungen, persönliche Schilder
 8. Grafik & Audio – Grafiken, Musik, weitere Effekte, Optimierung
 9. Qualitätssicherung – Mobile-Tests, Performance, Speicherstände
@@ -42,6 +42,18 @@
 - Bestehende Spielstände behalten ihren Avatar; der neue Look ist im Editor auswählbar.
 - Die Stadt-Umgebung (Bäume, Straßen, Bänke) und die Innenräume haben den bisherigen Stil;
   sie können in Phase 8 (Grafik) angeglichen werden.
+
+## Friseursalon, Café und Schule (Wunsch der Familie, vor Phase 6)
+
+- Alle drei Gebäude sind jetzt betretbar (vorher „Bald geöffnet“ / „Heute schulfrei!“).
+- Figuren in den Läden: Friseurin **Lina**, Café-Besitzer **Ben**, Lehrerin **Frau Sonnenschein** – aus
+  denselben Avatar-Ebenen gezeichnet, gehen in Ruhezeiten umher, sprechen in Sprechblasen, lassen sich ansprechen.
+  Sie sind keine Hindernisse.
+- Szenarien: Frisieren auf 3 Stühlen; Café bestellen + am Tisch genießen, Kuchen verzieren;
+  Rechen-Rätsel, Wörter-Spiel, Malecke mit Bild an der Wand, Xylophon mit Nachspiel-Modus, Bücherregal, Globus.
+- Spielstand-Version 5: `activityCoins` (Tageslimit 30 Münzen aus Rätseln). Café-Bestellungen kosten 3–6 Münzen.
+- Offen: Die Figuren haben noch keine eigene Berufskleidung (Schürze o. Ä.); im Café gibt es nur einen Gast-Platz
+  pro Tisch; „Sprich mit drei Figuren“ als Tagesaufgabe kommt mit den Stadt-Figuren in Phase 6.
 
 ## Offene Punkte nach Phase 5
 

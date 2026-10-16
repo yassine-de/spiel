@@ -25,6 +25,10 @@ import {
 import { findPlacement } from '../world/placement';
 import type { PropType } from '../world/props';
 import type { CitySceneData } from './CityScene';
+import { setupCafe } from './places/cafe';
+import type { Place, PlaceContext } from './places/PlaceContext';
+import { setupSalon } from './places/salon';
+import { setupSchool } from './places/school';
 import { viewSize } from './sceneUtils';
 import { type StartPoint, WorldScene } from './WorldScene';
 
@@ -65,6 +69,16 @@ const VISIT_EVENT: Record<InteriorId, TaskEvent> = {
   boutique: 'visit-boutique',
   rewe: 'visit-rewe',
   toystore: 'visit-toystore',
+  salon: 'visit-salon',
+  cafe: 'visit-cafe',
+  school: 'visit-school',
+};
+
+/** Orte mit eigenen Szenarien (Figuren, Sitzplätze, Spiele). */
+const PLACES: Partial<Record<InteriorId, (ctx: PlaceContext) => Place>> = {
+  salon: setupSalon,
+  cafe: setupCafe,
+  school: setupSchool,
 };
 
 /** Innenraum eines Gebäudes: Rückwand, Boden, Möbel, Läden und ein Ausgang unten in der Mitte. */
@@ -74,6 +88,8 @@ export class InteriorScene extends WorldScene {
   private cart = new ShoppingCart();
   /** Aufgestellte Spielzeuge (nur zu Hause) */
   private readonly placed = new Map<string, Phaser.GameObjects.Image>();
+  /** Szenarien in Salon, Café und Schule */
+  private place: Place | null = null;
 
   constructor() {
     super(SCENES.Interior);
@@ -150,6 +166,18 @@ export class InteriorScene extends WorldScene {
     }
 
     if (this.def.id === 'home') this.setupHome();
+    const setup = PLACES[this.def.id];
+    if (setup) {
+      this.place = setup({
+        scene: this,
+        player: this.player,
+        interactions: this.interactions,
+        world: this.world,
+        calm: this.calm,
+        setBusy: (on) => this.setBusy(on),
+        isBusy: () => this.isBusy,
+      });
+    }
 
     ui.toast.queue(this.def.welcome(saves.playerName), 3500);
     tasks.report(VISIT_EVENT[this.def.id]);
@@ -158,6 +186,12 @@ export class InteriorScene extends WorldScene {
   protected override onShutdown(): void {
     getUI().inventory.placement = null;
     this.placed.clear();
+    this.place?.destroy();
+    this.place = null;
+  }
+
+  protected override onUpdate(time: number, delta: number): void {
+    this.place?.update?.(time, delta);
   }
 
   /* ---------------- Samyas Haus ---------------- */

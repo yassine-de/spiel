@@ -28,6 +28,8 @@ export interface Pose {
   stride: number;
   /** vertikales Wippen des Oberkörpers */
   bob: number;
+  /** Sitzen (nur Vorderansicht): Oberkörper tiefer, Oberschenkel zeigen nach vorne */
+  sit?: boolean;
 }
 
 /** Spalte 0 = Stehen, Spalten 1–4 = Laufzyklus. */
@@ -38,6 +40,9 @@ export const POSES: Pose[] = [
   { stride: -1, bob: 1 },
   { stride: 0, bob: -3 },
 ];
+
+/** Sitzhaltung (auf Stühlen im Salon, Café und in der Schule). */
+export const SIT_POSE: Pose = { stride: 0, bob: 20, sit: true };
 
 /** Aufgelöste Farben und Kleidungsstücke eines Avatars. */
 export interface Look {

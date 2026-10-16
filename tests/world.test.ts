@@ -4,7 +4,18 @@ import { computeRenderScale } from '../src/game/managers/QualityManager';
 import type { CollisionManager } from '../src/game/systems/CollisionManager';
 import { BUILDINGS, type BuildingId } from '../src/game/world/buildings';
 import { type WorldLayout, buildingBase, createCityLayout, createLayoutCollisions, doorFront } from '../src/game/world/cityLayout';
-import { INTERIORS, exitPoint, floorArea, interiorLayout, roomStarts, spawnPoint } from '../src/game/world/interiors';
+import {
+  CAFE_TABLES,
+  INTERIORS,
+  SALON_CHAIRS_X,
+  SALON_CHAIR_Y,
+  SCHOOL_DESKS,
+  exitPoint,
+  floorArea,
+  interiorLayout,
+  roomStarts,
+  spawnPoint,
+} from '../src/game/world/interiors';
 import { findPlacement, isFreeSpot } from '../src/game/world/placement';
 import { propFootprint } from '../src/game/world/props';
 
@@ -76,12 +87,15 @@ describe('Stadt', () => {
     expect(BUILDINGS.home.labels[0].text).toBe('Hier wohnt Samya 🏠');
   });
 
-  it('genau Haus, Boutique, REWE und Spielzeugladen sind betretbar', () => {
+  it('alle Orte außer den Nachbarhäusern sind betretbar', () => {
     const enterable = Object.values(BUILDINGS)
       .filter((b) => b.interior)
       .map((b) => b.id)
       .sort();
-    expect(enterable).toEqual(['boutique', 'home', 'rewe', 'toystore']);
+    expect(enterable).toEqual(['boutique', 'cafe', 'home', 'rewe', 'salon', 'school', 'toystore']);
+    for (const def of Object.values(BUILDINGS)) {
+      if (def.interior) expect(INTERIORS[def.interior].building, def.id).toBe(def.id);
+    }
   });
 
   it('der Startpunkt ist frei und alle Objekte liegen in der Welt', () => {
@@ -174,6 +188,45 @@ describe('Samyas Haus', () => {
     for (const id of ['wardrobe', 'home-mirror', 'toybox', 'fridge', 'bed', 'tv']) {
       const p = def.props.find((x) => x.id === id)!;
       expect(canReachNear(points, p.x, p.y + 24, 110), id).toBe(true);
+    }
+  });
+});
+
+describe('Salon, Café und Schule', () => {
+  const setup = (id: 'salon' | 'cafe' | 'school') => {
+    const def = INTERIORS[id];
+    const collisions = createLayoutCollisions(interiorLayout(def));
+    return { collisions, points: reachable(collisions, spawnPoint(def)) };
+  };
+
+  it('Salon: alle drei Stühle sind erreichbar, vor dem Stuhl kann man aufstehen', () => {
+    const { collisions, points } = setup('salon');
+    expect(SALON_CHAIRS_X).toHaveLength(3);
+    for (const x of SALON_CHAIRS_X) {
+      expect(canReachNear(points, x, SALON_CHAIR_Y + 42, 60), `Stuhl ${x}`).toBe(true);
+      expect(collisions.collides(footprintAt(x, SALON_CHAIR_Y + 46))).toBe(false);
+    }
+  });
+
+  it('Café: Theke, Tische und Kuchentisch sind erreichbar; neben dem Tisch kann man aufstehen', () => {
+    const { collisions, points } = setup('cafe');
+    expect(canReachNear(points, 704, 402, 80)).toBe(true);
+    expect(canReachNear(points, 1110, 682, 80)).toBe(true);
+    for (const t of CAFE_TABLES) {
+      expect(canReachNear(points, t.x, t.y + 24, 70), `Tisch ${t.x}/${t.y}`).toBe(true);
+      expect(collisions.collides(footprintAt(t.x + 80, t.y - 8))).toBe(false);
+      expect(canReachNear(points, t.x + 80, t.y - 8, 12)).toBe(true);
+    }
+  });
+
+  it('Schule: Tafel, Bänke, Malecke, Xylophon, Regal und Globus sind erreichbar', () => {
+    const { collisions, points } = setup('school');
+    for (const [x, y] of [[704, 250], [150, 628], [1260, 628], [160, 356], [1060, 346]]) {
+      expect(canReachNear(points, x, y, 90), `${x}/${y}`).toBe(true);
+    }
+    for (const d of SCHOOL_DESKS) {
+      expect(canReachNear(points, d.x, d.y + 28, 50), `Bank ${d.x}/${d.y}`).toBe(true);
+      expect(collisions.collides(footprintAt(d.x, d.y + 30))).toBe(false);
     }
   });
 });

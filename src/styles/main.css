@@ -1743,6 +1743,411 @@ button {
   white-space: nowrap;
 }
 
+/* ---------------- Spiele in Salon, Café und Schule ---------------- */
+
+.activity-card {
+  width: min(96vw, 760px);
+}
+
+.act-hint {
+  margin: 4px 0 8px;
+  font-size: clamp(14px, 3.8vh, 17px);
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.act-section {
+  margin: 0 0 8px;
+}
+
+.act-section-title {
+  margin: 0 0 6px;
+  font-size: clamp(15px, 4vh, 18px);
+  color: var(--text-strong);
+  text-align: left;
+}
+
+.act-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.act-chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 3px solid var(--pink-light);
+  border-radius: 16px;
+  background: var(--white);
+  color: var(--text);
+  font: 600 clamp(13px, 3.4vh, 15px) var(--font);
+  cursor: pointer;
+}
+
+.act-chip.is-selected {
+  border-color: var(--pink-strong);
+  background: var(--pink-pale);
+  box-shadow: 0 0 0 2px rgba(255, 95, 162, 0.2);
+}
+
+.act-thumb {
+  width: clamp(44px, 12vh, 58px);
+  height: clamp(44px, 12vh, 58px);
+}
+
+.act-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  background: var(--swatch);
+}
+
+.act-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Friseursalon */
+.salon-layout,
+.cake-layout {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.salon-left,
+.cake-left {
+  flex: 0 0 auto;
+  width: clamp(130px, 30vw, 220px);
+  position: sticky;
+  top: 0;
+}
+
+.salon-preview {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 24px;
+  background: radial-gradient(circle at 50% 40%, #ffffff 0%, #e3f6f0 75%);
+  border: 3px solid #bfeadc;
+}
+
+.salon-right,
+.cake-right {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Café */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px;
+  border: 3px solid #f3dcc6;
+  border-radius: 20px;
+  background: #fffaf3;
+  color: var(--text);
+  font: 600 clamp(14px, 3.8vh, 17px) var(--font);
+  cursor: pointer;
+}
+
+.menu-item:active {
+  transform: scale(0.97);
+}
+
+.menu-item.is-disabled {
+  opacity: 0.55;
+}
+
+.menu-emoji {
+  font-size: clamp(30px, 9vh, 42px);
+  line-height: 1;
+}
+
+.menu-note {
+  font-size: 13px;
+  color: #b06a6a;
+}
+
+.cake-preview {
+  width: 100%;
+  aspect-ratio: 260 / 200;
+  border-radius: 20px;
+  background: radial-gradient(circle at 50% 40%, #ffffff 0%, #fff0f6 80%);
+  border: 3px solid var(--pink-light);
+}
+
+/* Schule: Rätsel */
+.quiz {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.quiz-progress {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.quiz-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.quiz-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #f1dbe6;
+}
+
+.quiz-dot.is-done {
+  background: #8fdc8f;
+}
+
+.quiz-dot.is-current {
+  background: var(--pink-strong);
+}
+
+.quiz-picture {
+  font-size: clamp(40px, 13vh, 64px);
+  line-height: 1.1;
+}
+
+.count-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 10px;
+  max-width: 100%;
+  font-size: clamp(18px, 5.5vh, 26px);
+  color: var(--text-strong);
+}
+
+.count-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1px;
+  max-width: 260px;
+}
+
+.count-icon.is-gone {
+  opacity: 0.25;
+  filter: grayscale(1);
+  text-decoration: line-through;
+}
+
+.quiz-prompt {
+  margin: 2px 0;
+  font-size: clamp(24px, 8vh, 36px);
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.quiz-answers {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.quiz-answer {
+  min-width: 96px;
+  min-height: 56px;
+  padding: 8px 18px;
+  border: 4px solid var(--lilac-light);
+  border-radius: 20px;
+  background: var(--white);
+  color: var(--text-strong);
+  font: 700 clamp(20px, 6vh, 28px) var(--font);
+  cursor: pointer;
+  box-shadow: 0 4px 0 #dccdf5;
+}
+
+.quiz-answer.is-right {
+  border-color: #6fcf7f;
+  background: #e9fbe9;
+  box-shadow: 0 4px 0 #9fe0a8;
+}
+
+.quiz-answer.is-wrong {
+  opacity: 0.5;
+  animation: quiz-shake 0.35s ease;
+}
+
+@keyframes quiz-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-6px);
+  }
+  75% {
+    transform: translateX(6px);
+  }
+}
+
+.quiz-feedback {
+  min-height: 1.4em;
+  margin: 4px 0 0;
+  font-size: clamp(16px, 4.5vh, 20px);
+  color: var(--text-strong);
+}
+
+.quiz-stars {
+  margin: 0;
+  font-size: clamp(26px, 8vh, 38px);
+  letter-spacing: 4px;
+}
+
+/* Schule: Malen */
+.paint-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.paint-canvas {
+  width: min(100%, calc((100vh - 230px) * 1.5));
+  min-width: 240px;
+  aspect-ratio: 3 / 2;
+  border-radius: 14px;
+  border: 3px solid #ffe08a;
+  background: #ffffff;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.paint-palette {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.paint-color {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  background: var(--swatch);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+}
+
+.paint-color.is-selected {
+  box-shadow: 0 0 0 3px var(--pink-strong);
+  transform: scale(1.1);
+}
+
+/* Schule: Xylophon */
+.xylo-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.xylo-bars {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 1.2vw, 10px);
+  width: 100%;
+  height: clamp(120px, 40vh, 220px);
+  padding: 10px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #a8714c, #8a5a3c);
+}
+
+.xylo-bar {
+  flex: 1 1 0;
+  max-width: 64px;
+  height: var(--len);
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 45%), var(--bar);
+  box-shadow:
+    inset 0 -6px 0 rgba(0, 0, 0, 0.15),
+    0 3px 0 rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.95);
+  font: 700 clamp(14px, 4vh, 20px) var(--font);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.xylo-bar.is-hit {
+  animation: xylo-hit 0.25s ease;
+}
+
+.xylo-bar.is-next {
+  outline: 4px solid #ffffff;
+  box-shadow:
+    0 0 0 8px rgba(255, 255, 255, 0.35),
+    0 0 18px 6px rgba(255, 240, 150, 0.9);
+}
+
+@keyframes xylo-hit {
+  50% {
+    transform: scaleY(0.94) translateY(3px);
+    filter: brightness(1.25);
+  }
+}
+
+/* Die Buttons bleiben sichtbar, auch wenn man durch die Auswahl scrollt */
+.salon-right .act-actions,
+.cake-right .act-actions {
+  position: sticky;
+  bottom: 0;
+  padding: 10px 0 4px;
+  background: linear-gradient(rgba(255, 248, 251, 0), var(--cream) 35%);
+}
+
+@media (max-height: 420px) {
+  .activity-card .modal-header {
+    padding-top: 6px;
+  }
+  .salon-left .act-hint {
+    display: none;
+  }
+  .salon-left,
+  .cake-left {
+    width: clamp(100px, 22vw, 160px);
+  }
+  .act-section {
+    margin-bottom: 4px;
+  }
+  .act-chip {
+    min-height: 40px;
+    padding: 4px 8px;
+  }
+  .paint-canvas {
+    width: min(100%, calc((100vh - 150px) * 1.5));
+  }
+}
+
 /* ---------------- Kleine Bildschirme ---------------- */
 
 @media (max-height: 420px) {

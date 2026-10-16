@@ -17,7 +17,9 @@ import {
   FRAME_W,
   HEAD_SCALE,
   POSES,
+  SIT_POSE,
   type Frame,
+  type Pose,
   type View,
   createFrame,
   headPivot,
@@ -90,12 +92,21 @@ function drawTwoToneHair(frame: Frame, layer: AvatarLayer, hair2: string): void 
 }
 
 export function paintAvatarFrame(config: AvatarConfig, direction: Direction, column: number): HTMLCanvasElement {
+  return paintPose(config, direction, POSES[column] ?? POSES[0]);
+}
+
+/** Sitzende Figur von vorne (ein einzelnes Bild im Format eines Frames). */
+export function paintAvatarSitting(config: AvatarConfig): HTMLCanvasElement {
+  return paintPose(config, 'down', SIT_POSE);
+}
+
+function paintPose(config: AvatarConfig, direction: Direction, pose: Pose): HTMLCanvasElement {
   const { canvas, ctx } = createCanvas(FRAME_W, FRAME_H);
   if (direction === 'right') {
     ctx.translate(FRAME_W, 0);
     ctx.scale(-1, 1);
   }
-  const frame = createFrame(ctx, VIEW_BY_DIRECTION[direction], POSES[column] ?? POSES[0], resolveLook(config), direction === 'right');
+  const frame = createFrame(ctx, VIEW_BY_DIRECTION[direction], pose, resolveLook(config), direction === 'right');
   for (const layer of AVATAR_LAYERS) {
     const hair2 = frame.look.hair2;
     if (hair2 && HAIR_LAYERS.has(layer.id)) drawTwoToneHair(frame, layer, hair2);

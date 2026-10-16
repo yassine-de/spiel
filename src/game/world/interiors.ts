@@ -7,7 +7,7 @@ import type { BuildingId } from './buildings';
 import type { WorldLayout } from './cityLayout';
 import type { PlacedProp } from './props';
 
-export type InteriorId = 'home' | 'boutique' | 'rewe' | 'toystore';
+export type InteriorId = 'home' | 'boutique' | 'rewe' | 'toystore' | 'salon' | 'cafe' | 'school';
 
 /** Ein Raum innerhalb eines Gebäudes (nebeneinander, durch Durchgänge verbunden). */
 export interface RoomDef {
@@ -67,6 +67,85 @@ export function roomStarts(def: InteriorDef): number[] {
 
 const wallTop = 14;
 const single = (floor: GroundTileId, wall: TextureKey): RoomDef[] => [{ cols: ROOM_COLS, floor, wall }];
+
+/** Positionen, die Szene und Layout gemeinsam brauchen. */
+export const SALON_CHAIRS_X = [420, 704, 988] as const;
+export const SALON_CHAIR_Y = 300;
+export const CAFE_TABLES: readonly { x: number; y: number }[] = [
+  { x: 300, y: 520 },
+  { x: 1110, y: 520 },
+  { x: 300, y: 664 },
+];
+/** Stuhl steht so weit hinter dem Tisch. */
+export const CHAIR_BEHIND = 34;
+export const SCHOOL_DESKS: readonly { x: number; y: number }[] = [400, 560, 850, 1010].flatMap((x) => [
+  { x, y: 470 },
+  { x, y: 610 },
+]);
+
+const SALON: InteriorDef = {
+  id: 'salon',
+  building: 'salon',
+  rooms: single(GroundTile.CheckerFloor, TextureKeys.WallSalon),
+  welcome: (name) => `Willkommen im Friseursalon, ${name}! Setz dich auf einen Stuhl ✂️`,
+  props: [
+    { type: 'wallWindow', x: 150, y: wallTop + 20 },
+    { type: 'boardSalon', x: 1228, y: wallTop + 14 },
+    ...SALON_CHAIRS_X.flatMap((x, i): PlacedProp[] => [
+      { type: 'salonMirror', x, y: wallTop + 4 },
+      { id: `chair-${i}`, type: 'salonChair', x, y: SALON_CHAIR_Y },
+    ]),
+    { id: 'trolley', type: 'salonTrolley', x: 1200, y: 300 },
+    { id: 'hair-shelf', type: 'hairShelf', x: 1250, y: 600 },
+    { type: 'sofa', x: 230, y: 560 },
+    { id: 'magazines', type: 'magazineTable', x: 230, y: 660 },
+    { type: 'plant', x: 1340, y: 300 },
+    { type: 'plant', x: 70, y: 300 },
+  ],
+};
+
+const CAFE: InteriorDef = {
+  id: 'cafe',
+  building: 'cafe',
+  rooms: single(GroundTile.WoodFloor, TextureKeys.WallCafe),
+  welcome: (name) => `Willkommen im Café, ${name}! Was darf es sein? ☕`,
+  props: [
+    { type: 'wallWindow', x: 230, y: wallTop + 20 },
+    { type: 'boardCafe', x: 704, y: wallTop + 8 },
+    { type: 'cupShelf', x: 704, y: wallTop + 92 },
+    { type: 'menuBoard', x: 1180, y: wallTop + 22 },
+    { id: 'counter', type: 'cafeCounter', x: 704, y: 360 },
+    ...CAFE_TABLES.flatMap(({ x, y }, i): PlacedProp[] => [
+      { id: `cafe-chair-${i}`, type: 'cafeChair', x, y: y - CHAIR_BEHIND },
+      { id: `cafe-table-${i}`, type: 'cafeTableRound', x, y },
+    ]),
+    { id: 'cake-station', type: 'cakeStation', x: 1110, y: 650 },
+    { type: 'plant', x: 80, y: 330 },
+    { type: 'plant', x: 1330, y: 330 },
+  ],
+};
+
+const SCHOOL: InteriorDef = {
+  id: 'school',
+  building: 'school',
+  rooms: single(GroundTile.WoodFloor, TextureKeys.WallSchool),
+  welcome: (name) => `Willkommen in der Adolf-Reichwein-Schule, ${name}! 🎒`,
+  props: [
+    { type: 'wallWindow', x: 110, y: wallTop + 20 },
+    { type: 'alphabetPoster', x: 300, y: wallTop + 30 },
+    { id: 'blackboard', type: 'blackboard', x: 704, y: wallTop + 8 },
+    { id: 'picture', type: 'pictureFrame', x: 1110, y: wallTop + 24 },
+    { type: 'wallWindow', x: 1300, y: wallTop + 20 },
+    { id: 'bookshelf', type: 'shelfBooks', x: 160, y: 330 },
+    { id: 'teacher-desk', type: 'teacherDesk', x: 1060, y: 320 },
+    ...SCHOOL_DESKS.flatMap(({ x, y }, i): PlacedProp[] => [
+      { id: `school-chair-${i}`, type: 'schoolChair', x, y: y - CHAIR_BEHIND },
+      { id: `school-desk-${i}`, type: 'schoolDesk', x, y },
+    ]),
+    { id: 'easel', type: 'easel', x: 150, y: 600 },
+    { id: 'xylophone', type: 'xylophoneTable', x: 1260, y: 600 },
+  ],
+};
 
 /** Samyas Haus: Schlafzimmer | Wohnzimmer (mit Haustür) | Küche */
 const R = 20 * TILE_SIZE;
@@ -168,6 +247,9 @@ export const INTERIORS: Record<InteriorId, InteriorDef> = {
       { type: 'plant', x: 1340, y: 420 },
     ],
   },
+  salon: SALON,
+  cafe: CAFE,
+  school: SCHOOL,
 };
 
 /** Raum(e) als Kartenlayout: Böden, Trennwände mit Durchgang, Raumschilder, Möbel, Ausgang. */

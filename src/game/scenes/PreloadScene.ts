@@ -5,6 +5,7 @@ import { ASSETS } from '../assets/assetManifest';
 import { createMissingPlaceholders, queueAssetFiles } from '../assets/textureRegistry';
 import { SCENES } from '../config/constants';
 import { createCharacterAnimations } from '../entities/characterAnimations';
+import { NPCS } from '../npc/npcs';
 import { saves } from '../services';
 import { getUI } from '../ui';
 
@@ -31,6 +32,11 @@ export class PreloadScene extends Phaser.Scene {
     }
     applyAvatarTexture(this.textures, saves.avatar);
     createCharacterAnimations(this.anims, TextureKeys.Player);
+    // Figuren in Salon, Café und Schule
+    for (const npc of Object.values(NPCS)) {
+      applyAvatarTexture(this.textures, npc.avatar, npc.texture);
+      createCharacterAnimations(this.anims, npc.texture);
+    }
     ui.loading.setProgress(1);
     ui.loading.hide();
     this.scene.start(SCENES.MainMenu);

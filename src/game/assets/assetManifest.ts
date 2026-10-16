@@ -5,8 +5,8 @@
  * - Fehlt `file` (oder schlägt das Laden fehl), wird der gekennzeichnete
  *   PLATZHALTER aus `placeholders/` erzeugt.
  *
- * Die Spielfigur (TextureKeys.Player) steht nicht hier: Sie wird aus dem
- * Avatar erzeugt (avatar/avatarTexture.ts).
+ * Die Spielfigur (TextureKeys.Player) und die Figuren in den Läden (Npc…)
+ * stehen nicht hier: Sie werden aus Avatar-Ebenen erzeugt (avatar/avatarTexture.ts).
  *
  * Echte Grafiken ersetzen Platzhalter also, indem man hier `file` einträgt –
  * ohne Änderungen an der Spiellogik. Alle Grafiken sind @2x (ASSET_SCALE).
@@ -18,6 +18,7 @@ import * as city from './placeholders/cityPainter';
 import * as env from './placeholders/environmentPainter';
 import * as home from './placeholders/homePainter';
 import * as int from './placeholders/interiorPainter';
+import * as places from './placeholders/placesPainter';
 import { itemTextureKey, paintItemSprite } from './placeholders/itemIconPainter';
 import { PRODUCTS } from '../shop/products';
 
@@ -129,6 +130,33 @@ export const ASSETS: AssetEntry[] = [
   image(TextureKeys.PartitionHigh, () => home.paintPartition(PARTITION_HIGH)),
   image(TextureKeys.PartitionLow, () => home.paintPartition(PARTITION_LOW)),
   image(TextureKeys.RoomBoard, home.paintRoomBoard),
+  // Friseursalon
+  image(TextureKeys.WallSalon, () => int.paintWall('salon')),
+  image(TextureKeys.BoardSalon, () => int.paintWallBoard('#ffffff', '#5fcfb0', 300, 64)),
+  image(TextureKeys.SalonChair, places.paintSalonChair),
+  image(TextureKeys.SalonMirror, places.paintSalonMirror),
+  image(TextureKeys.SalonTrolley, places.paintSalonTrolley),
+  image(TextureKeys.HairShelf, places.paintHairShelf),
+  image(TextureKeys.MagazineTable, places.paintMagazineTable),
+  // Café
+  image(TextureKeys.WallCafe, () => int.paintWall('cafe')),
+  image(TextureKeys.BoardCafe, () => int.paintWallBoard('#fffaf0', '#c98a5e', 240, 64)),
+  image(TextureKeys.CafeCounter, places.paintCafeCounter),
+  image(TextureKeys.CafeTableRound, places.paintCafeTableRound),
+  image(TextureKeys.CafeChair, places.paintCafeChair),
+  image(TextureKeys.CakeStation, places.paintCakeStation),
+  image(TextureKeys.MenuBoard, places.paintMenuBoard),
+  image(TextureKeys.CupShelf, places.paintCupShelf),
+  // Schule
+  image(TextureKeys.WallSchool, () => int.paintWall('school')),
+  image(TextureKeys.Blackboard, places.paintBlackboard),
+  image(TextureKeys.AlphabetPoster, places.paintAlphabetPoster),
+  image(TextureKeys.PictureFrame, places.paintPictureFrame),
+  image(TextureKeys.SchoolDesk, places.paintSchoolDesk),
+  image(TextureKeys.SchoolChair, places.paintSchoolChair),
+  image(TextureKeys.TeacherDesk, places.paintTeacherDesk),
+  image(TextureKeys.Easel, places.paintEasel),
+  image(TextureKeys.XylophoneTable, places.paintXylophoneTable),
   // Aufstellbare Spielzeuge (aus den Produktbildern)
   ...PRODUCTS.filter((p) => p.category === 'toys').map((p) => image(itemTextureKey(p.id) as `item-${string}`, () => paintItemSprite(p.id))),
 ];

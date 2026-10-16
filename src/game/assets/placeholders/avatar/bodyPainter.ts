@@ -42,10 +42,37 @@ function sheen(ctx: CanvasRenderingContext2D, path: () => void, box: Box): void 
 /* Beine und Schuhe                                                    */
 /* ------------------------------------------------------------------ */
 
+/** Sitzen von vorne: Unterschenkel nach unten, Oberschenkel als verkürzte Rundung zum Betrachter. */
+function drawSittingLegs(f: Frame): void {
+  const { ctx, look } = f;
+  const bottom = look.bottom;
+  const variant = bottom?.category === 'pants' ? bottom.variant : null;
+  for (const leg of legGeometry(f)) {
+    const out = leg.hipX < f.cx ? -1 : 1;
+    const kneeX = leg.hipX + out * 3;
+    const kneeY = f.hipY + 10;
+    const ankleY = leg.footY - 8;
+    const pants = bottom && (variant === 'pants' || variant === 'joggers') ? itemColor(bottom, leg.side) : null;
+    const thigh = pants ?? (bottom && variant === 'shorts' ? itemColor(bottom, leg.side) : look.skin);
+    const shin = pants ?? look.skin;
+    if (variant === 'joggers' && pants) {
+      limb(ctx, kneeX, kneeY, leg.footX, ankleY - 6, 18, shin);
+      limb(ctx, leg.footX, ankleY - 6, leg.footX, ankleY, 13, shade(shin, -0.1));
+    } else {
+      limb(ctx, kneeX, kneeY, leg.footX, ankleY + (pants ? 2 : 0), pants ? 16 : 12, shin);
+    }
+    ball(ctx, (leg.hipX + kneeX) / 2, f.hipY + 5, pants || variant === 'shorts' ? 11 : 9.5, 9, thigh);
+  }
+}
+
 export function drawLegs(f: Frame): void {
   const { ctx, look } = f;
   const bottom = look.bottom;
   const variant = bottom?.category === 'pants' ? bottom.variant : null;
+  if (f.pose.sit && f.view === 'front') {
+    drawSittingLegs(f);
+    return;
+  }
   for (const leg of legGeometry(f)) {
     const tint = (c: string) => (leg.far ? shade(c, -0.15) : c);
     const hipY = f.hipY + 2;

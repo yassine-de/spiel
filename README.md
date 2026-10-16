@@ -88,6 +88,25 @@ Samya. Daneben stehend erscheint „… wegräumen“. Aufgestellte Spielzeuge w
 **HUD oben links:** „Kleidung“ öffnet den Kleiderschrank von überall, „Nach Hause“ bringt Samya direkt nach
 Hause (der Button fehlt, wenn sie schon dort ist).
 
+## Friseursalon, Café und Schule
+
+In diesen drei Orten arbeiten Figuren, die umhergehen, in Sprechblasen reden und sich ansprechen lassen
+(„Mit … plaudern“). Samya kann sich auf Stühle setzen (eigenes Sitzbild, aus denselben Avatar-Ebenen).
+
+| Ort | Was man tun kann |
+| --- | --- |
+| **Friseursalon** (Friseurin Lina) | Auf einen der **3 Stühle** setzen → Lina kommt, fragt nach dem Wunsch: neue Frisur, neue Haarfarbe, Haarschmuck, Glitzer-Spray – mit Live-Vorschau. Sie frisiert (Schere, Funken), die neue Frisur bleibt gespeichert. Ohne Änderung gibt es „Waschen & Föhnen“. Kostenlos. Dazu: Zeitschrift lesen, Haarpflege ansehen. |
+| **Café** (Ben) | An der Theke **bestellen** (Kakao, Shake, Saft, Muffin, Pfannkuchen, Eis; 3–6 Münzen) → Ben bereitet es zu → an einem **Tisch** hinsetzen und genießen. **Kuchen verzieren** (Teig, Glasur, bis zu 3 Dekos) – kostenlos, danach am Tisch essen. |
+| **Schule** (Frau Sonnenschein) | **Rechen-Rätsel** an der Tafel (Plus/Minus bis 20, mit Bildern zum Abzählen), **Wörter-Spiel** an einer Schulbank (Bild → Wort), **Malecke** (mit dem Finger malen; das Bild hängt danach an der Wand und bleibt gespeichert), **Xylophon** („Alle meine Entchen“ vorspielen lassen und nachspielen), Bücherregal mit „Wusstest du?“-Fakten, Globus. |
+
+- **Münzen aus Rätseln:** 2 pro Aufgabe, die beim ersten Versuch stimmt – höchstens 30 pro Tag
+  (`ACTIVITY_COINS_PER_DAY`), damit die Läden spannend bleiben.
+- **Neue Tagesaufgaben:** Haare machen lassen, Kuchen verzieren, Rätsel lösen, Bild malen, Lied spielen.
+- Spielstand-Version 5 (Tageszähler für Rätsel-Münzen); das gemalte Bild liegt getrennt unter
+  `samyas-world:drawing` und wird beim „Spielstand löschen“ mit entfernt.
+- Code: `src/game/scenes/places/` (Abläufe), `src/game/activities/` (Rätsel, Speisekarte, Lied),
+  `src/game/ui/activities.ts` (Fenster), `src/game/npc/npcs.ts` (Figuren), `src/game/entities/Npc.ts`.
+
 ## Avatar und Spielstand
 
 - Beim ersten „Spielen“ öffnet sich der **Avatar-Editor** (Ich · Gesicht · Haare · Kleidung · Extras).

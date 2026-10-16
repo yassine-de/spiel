@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_AVATAR } from '../src/game/avatar/avatarCatalog';
 import type { KeyValueStore } from '../src/storage/safeStorage';
-import { SAVE_BACKUP_KEY, SAVE_KEY, SAVE_VERSION, SaveManager, START_COINS, migrate } from '../src/storage/saveManager';
+import { DRAWING_KEY, loadDrawing, saveDrawing } from '../src/storage/drawingStore';
+import { ACTIVITY_COINS_PER_DAY, SAVE_BACKUP_KEY, SAVE_KEY, SAVE_VERSION, SaveManager, START_COINS, migrate } from '../src/storage/saveManager';
 
 function memoryStore(initial: Record<string, string> = {}, failWrites = false) {
   const data: Record<string, string> = { ...initial };
@@ -206,5 +207,58 @@ describe('Spielstand Version 4 (Phase 5)', () => {
     const saves4 = new SaveManager(other.store, fixedNow);
     saves4.load();
     expect(saves4.placements).toEqual({ 'toy-ball': { x: 5, y: 6 } });
+  });
+});
+
+describe('Spielstand Version 5 (Salon, Café, Schule)', () => {
+  it('im Café bezahlen: nie mehr, als man hat', () => {
+    const { store } = memoryStore();
+    const saves = new SaveManager(store, fixedNow);
+    saves.create({ ...DEFAULT_AVATAR });
+    expect(saves.spend(5)).toBe(true);
+    expect(saves.coins).toBe(START_COINS - 5);
+    expect(saves.spend(START_COINS)).toBe(false);
+    expect(saves.spend(-3)).toBe(false);
+    expect(saves.spend(1.5)).toBe(false);
+    expect(saves.coins).toBe(START_COINS - 5);
+  });
+
+  it('Münzen aus Spielen haben ein Tageslimit', () => {
+    const { store } = memoryStore();
+    const saves = new SaveManager(store, fixedNow);
+    saves.create({ ...DEFAULT_AVATAR });
+    expect(saves.earnFromActivity('2026-10-16', 10)).toBe(10);
+    expect(saves.earnFromActivity('2026-10-16', ACTIVITY_COINS_PER_DAY)).toBe(ACTIVITY_COINS_PER_DAY - 10);
+    expect(saves.earnFromActivity('2026-10-16', 4)).toBe(0);
+    expect(saves.coins).toBe(START_COINS + ACTIVITY_COINS_PER_DAY);
+    // Das Limit übersteht einen Neustart; am nächsten Tag geht es wieder
+    const reloaded = new SaveManager(store, fixedNow);
+    reloaded.load();
+    expect(reloaded.earnFromActivity('2026-10-16', 4)).toBe(0);
+    expect(reloaded.earnFromActivity('2026-10-17', 4)).toBe(4);
+  });
+
+  it('Version 4 → 5 und kaputte Tageszähler werden repariert', () => {
+    const v4 = { version: 4, avatar: DEFAULT_AVATAR, coins: 50, inventory: {}, placements: {} };
+    const { store } = memoryStore({ [SAVE_KEY]: JSON.stringify(v4) });
+    const saves = new SaveManager(store, fixedNow);
+    expect(saves.load()).toBe('loaded');
+    expect(saves.current?.activityCoins).toBeNull();
+    expect(saves.coins).toBe(50);
+    const broken = { version: 5, avatar: DEFAULT_AVATAR, activityCoins: { date: 'gestern', earned: 999 } };
+    const other = memoryStore({ [SAVE_KEY]: JSON.stringify(broken) });
+    const saves5 = new SaveManager(other.store, fixedNow);
+    saves5.load();
+    expect(saves5.current?.activityCoins).toBeNull();
+  });
+
+  it('gemaltes Bild: nur PNG-Daten in vernünftiger Größe', () => {
+    const { store, data } = memoryStore();
+    expect(saveDrawing('data:image/png;base64,AAAA', store)).toBe(true);
+    expect(loadDrawing(store)).toBe('data:image/png;base64,AAAA');
+    expect(saveDrawing('javascript:alert(1)', store)).toBe(false);
+    expect(saveDrawing('data:image/png;base64,' + 'A'.repeat(500_000), store)).toBe(false);
+    data[DRAWING_KEY] = 'data:text/html,<b>';
+    expect(loadDrawing(store)).toBeNull();
   });
 });

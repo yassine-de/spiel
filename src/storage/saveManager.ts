@@ -13,11 +13,13 @@ import { safeStorage, type KeyValueStore } from './safeStorage';
  * SAVE_VERSION erhöhen und in MIGRATIONS eine Funktion ergänzen,
  * die alte Spielstände auf das neue Format bringt.
  */
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 export const SAVE_KEY = `${STORAGE_PREFIX}:save`;
 /** Unlesbare Spielstände werden hier aufbewahrt statt gelöscht. */
 export const SAVE_BACKUP_KEY = `${STORAGE_PREFIX}:save-backup`;
 export const START_COINS = 1000;
+/** So viele Münzen lassen sich pro Tag mit Spielen (z. B. in der Schule) verdienen. */
+export const ACTIVITY_COINS_PER_DAY = 30;
 
 export interface SaveData {
   version: number;
@@ -36,6 +38,8 @@ export interface SaveData {
   tasks: DailyTaskState | null;
   /** Im Haus aufgestellte Spielzeuge: Produkt-ID → Position (Fußpunkt) */
   placements: Record<string, { x: number; y: number }>;
+  /** Heute mit Spielen verdiente Münzen (Tageslimit) */
+  activityCoins: { date: string; earned: number } | null;
 }
 
 export interface DailyTaskState {
@@ -67,7 +71,17 @@ export const MIGRATIONS: Record<number, Migration> = {
   },
   // Version 3 → 4 (Phase 5): aufgestellte Spielzeuge im Haus
   3: (data) => ({ ...data, placements: {} }),
+  // Version 4 → 5: Münzen aus Spielen in Friseursalon, Café und Schule (Tageslimit)
+  4: (data) => ({ ...data, activityCoins: null }),
 };
+
+function sanitizeActivityCoins(value: unknown): { date: string; earned: number } | null {
+  if (typeof value !== 'object' || value === null) return null;
+  const { date, earned } = value as Record<string, unknown>;
+  if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
+  if (typeof earned !== 'number' || !Number.isFinite(earned)) return null;
+  return { date, earned: Math.max(0, Math.min(ACTIVITY_COINS_PER_DAY, Math.floor(earned))) };
+}
 
 /** Nur gekaufte Spielzeuge können aufgestellt sein. */
 function sanitizePlacements(value: unknown, inventory: Record<string, number>): Record<string, { x: number; y: number }> {
@@ -149,6 +163,7 @@ export function sanitizeSave(data: RawData, now: string): SaveData | null {
     inventory,
     tasks: sanitizeTasks(data.tasks),
     placements: sanitizePlacements(data.placements, inventory),
+    activityCoins: sanitizeActivityCoins(data.activityCoins),
   };
 }
 
@@ -218,6 +233,7 @@ export class SaveManager {
       inventory: {},
       tasks: null,
       placements: {},
+      activityCoins: null,
     };
     return this.write();
   }
@@ -263,6 +279,33 @@ export class SaveManager {
     this.data = { ...this.data, inventory };
     this.write();
     return true;
+  }
+
+  /** Bezahlt etwas direkt (z. B. im Café). Münzen werden nie negativ. */
+  spend(amount: number): boolean {
+    if (!this.data || !Number.isInteger(amount) || amount < 0 || amount > this.data.coins) return false;
+    this.data = { ...this.data, coins: this.data.coins - amount };
+    return this.write();
+  }
+
+  /** Noch heute mit Spielen verdienbare Münzen. */
+  activityCoinsLeft(date: string): number {
+    const state = this.data?.activityCoins;
+    return ACTIVITY_COINS_PER_DAY - (state?.date === date ? state.earned : 0);
+  }
+
+  /**
+   * Belohnung für ein Spiel (Rätsel, Wörter …) – höchstens ACTIVITY_COINS_PER_DAY pro Tag.
+   * Gibt die tatsächlich gutgeschriebenen Münzen zurück.
+   */
+  earnFromActivity(date: string, amount: number): number {
+    if (!this.data || !Number.isInteger(amount) || amount <= 0) return 0;
+    const granted = Math.min(amount, Math.max(0, this.activityCoinsLeft(date)));
+    if (granted === 0) return 0;
+    const earned = (this.data.activityCoins?.date === date ? this.data.activityCoins.earned : 0) + granted;
+    this.data = { ...this.data, coins: this.data.coins + granted, activityCoins: { date, earned } };
+    this.write();
+    return granted;
   }
 
   /* ---------------- Aufgestellte Spielzeuge ---------------- */

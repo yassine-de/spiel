@@ -28,6 +28,8 @@ export abstract class WorldScene extends Phaser.Scene {
   protected calm = false;
   private debug: DebugOverlay | null = null;
   private leaving = false;
+  /** Läuft gerade eine Aktion (Sitzen, Frisieren, Spiel)? Dann keine Bewegung und keine Buttons. */
+  private busy = false;
 
   /** Kartendaten des Ortes. */
   protected abstract createLayout(): WorldLayout;
@@ -43,6 +45,7 @@ export abstract class WorldScene extends Phaser.Scene {
   create(): void {
     const ui = getUI();
     this.leaving = false;
+    this.busy = false;
     this.calm = reducedMotion();
     const layout = this.createLayout();
     this.world = buildWorld(this, layout, { reducedMotion: this.calm });
@@ -101,12 +104,14 @@ export abstract class WorldScene extends Phaser.Scene {
       if (ui.pause.isOpen) return;
       ui.hud.show();
       ui.hud.setPlayer(saves.playerName, saves.avatar);
-      ui.hud.setInteraction(this.interactions.active?.label ?? null);
+      ui.hud.setInteraction(this.busy ? null : (this.interactions.active?.label ?? null));
     });
 
     if (DEBUG_ENABLED) this.enableDebug();
 
     this.events.once('shutdown', () => {
+      this.setBusy(false);
+      ui.activity.cancel();
       ui.shop.close();
       ui.inventory.hide();
       ui.tasks.hide();
@@ -128,8 +133,10 @@ export abstract class WorldScene extends Phaser.Scene {
   override update(time: number, delta: number): void {
     this.controller.update(delta);
     this.onUpdate(time, delta);
-    this.interactions.update(this.player.x, this.player.y);
-    if (input.consumeInteract()) this.interactions.trigger();
+    if (!this.busy) {
+      this.interactions.update(this.player.x, this.player.y);
+      if (input.consumeInteract()) this.interactions.trigger();
+    }
     this.debug?.update(time, {
       FPS: Math.round(this.game.loop.actualFps),
       Ort: this.scene.key,
@@ -138,6 +145,27 @@ export abstract class WorldScene extends Phaser.Scene {
       Blick: this.player.facing,
       Auflösung: `${renderQuality.scale}×`,
     });
+  }
+
+  /** Sperrt Bewegung und Interaktionen während einer Aktion – und gibt sie danach wieder frei. */
+  protected setBusy(on: boolean): void {
+    if (this.busy === on) return;
+    this.busy = on;
+    const ui = getUI();
+    if (on) {
+      input.block('activity');
+      ui.hud.setInteraction(null);
+    } else {
+      input.unblock('activity');
+      if (this.interactions) {
+        this.interactions.update(this.player.x, this.player.y);
+        ui.hud.setInteraction(this.interactions.active?.label ?? null);
+      }
+    }
+  }
+
+  protected get isBusy(): boolean {
+    return this.busy;
   }
 
   /** Sanfter Szenenwechsel; Eingaben sind währenddessen gesperrt. */

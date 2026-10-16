@@ -1,5 +1,6 @@
 import { TextureKeys, type TextureKey } from '../assets/assetKeys';
-import { type BuildingVisual, buildingCanvasSize, buildingMetrics } from '../assets/placeholders/buildingPainter';
+import { type BuildingVisual, buildingCanvasSize } from '../assets/placeholders/buildingPainter';
+import type { InteriorId } from './interiors';
 
 export type BuildingId =
   | 'home'
@@ -30,7 +31,7 @@ export interface BuildingDef {
   texture: TextureKey;
   visual: BuildingVisual;
   /** Innenraum, falls betretbar */
-  interior?: 'home' | 'boutique' | 'rewe' | 'toystore';
+  interior?: InteriorId;
   /** Text des Interaktionsbuttons vor der Tür */
   enterLabel?: string;
   labels: LabelSlot[];
@@ -46,11 +47,6 @@ function signLabel(v: BuildingVisual, text: string, fontSize: number, color = SI
   return { text, offsetY: -sign.fromBase, maxWidth: sign.width - 24, fontSize, color };
 }
 
-/** Beschriftung auf dem Schild quer über der geschlossenen Tür. */
-function doorLabel(v: BuildingVisual, text: string): LabelSlot {
-  return { text, offsetY: -buildingMetrics(v).doorSignCenter, maxWidth: v.doorSign!.width - 12, fontSize: 20, color: SIGN_COLOR };
-}
-
 const school: BuildingVisual = {
   width: 640,
   wallHeight: 290,
@@ -62,7 +58,6 @@ const school: BuildingVisual = {
   upperWindows: 5,
   display: 'curtains',
   door: { style: 'arch', color: '#2f6a8f', width: 72 },
-  doorSign: { width: 210 },
   sign: { width: 320, height: 44, fromBase: 150, fill: '#ffffff', border: '#2f6a8f' },
   clock: true,
 };
@@ -128,7 +123,6 @@ const cafe: BuildingVisual = {
   display: 'cups',
   door: { style: 'shop', color: '#7a4f34', width: 62 },
   awning: ['#8fdccf', '#ffffff'],
-  doorSign: { width: 170 },
   sign: { width: 190, height: 40, fromBase: 196, fill: '#ffffff', border: '#8fdccf' },
 };
 
@@ -144,7 +138,6 @@ const salon: BuildingVisual = {
   display: 'mirrors',
   door: { style: 'shop', color: '#7d63b0', width: 62 },
   awning: ['#c9a7ef', '#ffffff'],
-  doorSign: { width: 170 },
   sign: { width: 240, height: 40, fromBase: 196, fill: '#ffffff', border: '#c9a7ef' },
 };
 
@@ -224,7 +217,9 @@ export const BUILDINGS: Record<BuildingId, BuildingDef> = {
     name: 'Café',
     texture: TextureKeys.BldCafe,
     visual: cafe,
-    labels: [signLabel(cafe, 'Café', 26, '#3e9a7c'), doorLabel(cafe, 'Bald geöffnet')],
+    interior: 'cafe',
+    enterLabel: 'Café betreten',
+    labels: [signLabel(cafe, 'Café', 26, '#3e9a7c')],
     discoverable: true,
   },
   salon: {
@@ -232,7 +227,9 @@ export const BUILDINGS: Record<BuildingId, BuildingDef> = {
     name: 'Friseursalon',
     texture: TextureKeys.BldSalon,
     visual: salon,
-    labels: [signLabel(salon, 'Friseursalon', 24, '#8a6ccc'), doorLabel(salon, 'Bald geöffnet')],
+    interior: 'salon',
+    enterLabel: 'Salon betreten',
+    labels: [signLabel(salon, 'Friseursalon', 24, '#8a6ccc')],
     discoverable: true,
   },
   school: {
@@ -240,7 +237,9 @@ export const BUILDINGS: Record<BuildingId, BuildingDef> = {
     name: 'Adolf-Reichwein-Schule',
     texture: TextureKeys.BldSchool,
     visual: school,
-    labels: [signLabel(school, 'Adolf-Reichwein-Schule', 23, '#5b4a9a'), doorLabel(school, 'Heute schulfrei! 🎒')],
+    interior: 'school',
+    enterLabel: 'Schule betreten',
+    labels: [signLabel(school, 'Adolf-Reichwein-Schule', 23, '#5b4a9a')],
     discoverable: true,
   },
   neighborBlue: {
